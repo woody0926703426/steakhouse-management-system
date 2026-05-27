@@ -1,0 +1,159 @@
+<div class="container py-4">
+  <div class="text-center mb-4">
+    <h1 class="display-6 fw-bold text-danger">STEAK HOUSE REALTIME</h1>
+  </div>
+
+  <div *ngIf="step === 1" class="animate-fade-in">
+    <div class="card border-0 shadow-sm">
+      <div class="card-header bg-dark text-white text-center py-3">
+        <h5 class="mb-0">กรุณาเลือกโต๊ะ (สถานะ Real-time)</h5>
+      </div>
+      <div class="card-body p-4">
+        <div class="row g-3">
+          <div class="col-3 col-md-2" *ngFor="let t of tables">
+            <button (click)="selectTable(t)" [disabled]="!t.isAvailable"
+              [class]="t.isAvailable ? 'btn btn-outline-danger' : 'btn btn-secondary opacity-50'"
+              class="btn w-100 py-4 fw-bold shadow-sm">
+              {{ t.id }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="step === 2" class="animate-fade-in">
+    <div class="sticky-top bg-white border-bottom py-3 mb-4 shadow-sm" style="top: 0; z-index: 1020;">
+      <div class="d-flex justify-content-between align-items-center container">
+        <h5 class="mb-0">โต๊ะ: <span class="text-danger">{{ selectedTable }}</span></h5>
+        <button (click)="confirmOrder()" class="btn btn-danger px-4 rounded-pill">ยืนยันออเดอร์</button>
+      </div>
+    </div>
+    <div class="row g-3">
+      <div class="col-12 col-lg-6" *ngFor="let item of menuItems">
+        <div class="card border-0 shadow-sm overflow-hidden">
+          <div class="row g-0">
+            <div class="col-4"><img [src]="item.image" class="img-fluid h-100 border-end" style="object-fit: cover;"></div>
+            <div class="col-8">
+              <div class="card-body">
+                <h6 class="fw-bold mb-1">{{ item.name }}</h6>
+                <p class="text-danger mb-2">{{ item.price }} ฿</p>
+                <div class="d-flex align-items-center justify-content-end">
+                  <button (click)="updateQuantity(item, -1)" class="btn btn-sm btn-light border">-</button>
+                  <span class="mx-3 fw-bold">{{ item.quantity }}</span>
+                  <button (click)="updateQuantity(item, 1)" class="btn btn-sm btn-danger">+</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="step === 4" class="text-center py-5 animate-fade-in">
+    <div class="card border-0 shadow-sm mx-auto p-4" style="max-width: 500px; border-top: 5px solid #198754;">
+      <div class="card-body">
+        <i class="bi bi-egg-fried text-success display-1"></i>
+        <h2 class="fw-bold mt-3">Enjoy Your Meal!</h2>
+        <p class="text-muted">โต๊ะ {{ selectedTable }} | สามารถสั่งเพิ่มได้ตลอดเวลา</p>
+        <div class="row g-3 mt-4">
+          <div class="col-12"><button (click)="step = 2" class="btn btn-outline-danger btn-lg w-100">สั่งอาหารเพิ่ม</button></div>
+          <div class="col-12"><button (click)="step = 3" class="btn btn-dark btn-lg w-100">เช็คบิล / ชำระเงิน</button></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="step === 3" class="animate-fade-in text-center py-4">
+    <div class="card border-0 shadow-lg mx-auto" style="max-width: 450px; border-radius: 15px;">
+      <div class="card-body p-4">
+        <h4 class="fw-bold mb-4">ใบแจ้งยอด โต๊ะ {{ selectedTable }}</h4>
+        <div class="bg-light p-3 rounded text-start mb-4">
+          <div *ngFor="let item of menuItems">
+            <div class="d-flex justify-content-between small mb-1" *ngIf="item.quantity > 0">
+              <span>{{ item.name }} x {{ item.quantity }}</span>
+              <span>{{ item.price * item.quantity | number }} ฿</span>
+            </div>
+          </div>
+          <hr>
+          <div class="d-flex justify-content-between small text-muted"><span>ยอดรวมอาหาร</span><span>{{ subTotalPrice | number }} ฿</span></div>
+          <div class="d-flex justify-content-between small text-muted"><span>ภาษี (VAT 7%)</span><span>{{ vatAmount | number:'1.2-2' }} ฿</span></div>
+          <div class="d-flex justify-content-between fw-bold fs-4 mt-2 text-danger"><span>ยอดสุทธิ</span><span>{{ grandTotal | number:'1.2-2' }} ฿</span></div>
+        </div>
+        <p class="small text-muted mb-3">เลือกช่องทางชำระเงินเพื่อเช็คเอาท์</p>
+        <div class="row g-3 mb-4">
+          <div class="col-6">
+            <button (click)="selectPayment('qr')" class="btn btn-outline-primary w-100 py-3">
+              <i class="bi bi-qr-code-scan fs-3"></i><br>PromptPay
+            </button>
+          </div>
+          <div class="col-6">
+            <button (click)="selectPayment('cash')" class="btn btn-outline-success w-100 py-3">
+              <i class="bi bi-cash-coin fs-3"></i><br>เงินสด
+            </button>
+          </div>
+        </div>
+
+        <div *ngIf="paymentMethod === 'qr'" class="text-center animate-fade-in mb-4">
+          <div class="card p-3 shadow-sm border-0 bg-white">
+            <p class="fw-bold mb-2">สแกนเพื่อชำระเงิน</p>
+            <img [src]="'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=PROMPTPAY_DATA_HERE'" 
+              class="mx-auto mb-3" style="width: 200px;">
+            <p class="text-danger fw-bold fs-4">{{ grandTotal | number:'1.2-2' }} ฿</p>
+    
+            <button (click)="confirmPayment()" class="btn btn-primary w-100">
+              ฉันชำระเงินเรียบร้อยแล้ว
+            </button>
+          </div>
+        </div>
+
+        <div *ngIf="paymentMethod === 'cash'" class="text-center animate-fade-in">
+          <div class="alert alert-success">
+            <i class="bi bi-info-circle me-2"></i>พนักงานกำลังไปหาท่านที่โต๊ะ {{selectedTable}}
+          </div>
+          <button (click)="confirmPayment()" class="btn btn-success w-100">
+            เมื่อชำระเงินแล้ว กดที่นี่เพื่อรับใบเสร็จ
+          </button>
+        </div>
+        <button (click)="step = 4" class="btn btn-link mt-3 text-secondary text-decoration-none">ยังไม่จ่าย กลับไปทานต่อ</button>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="step === 5" class="animate-fade-in text-center py-5">
+    <div class="card border-0 shadow-lg mx-auto p-4" style="max-width: 500px; border-top: 5px solid #198754;">
+      <div class="card-body">
+        <div class="mb-4">
+          <i class="bi bi-check-circle-fill text-success" style="font-size: 4rem;"></i>
+        </div>
+        <h2 class="fw-bold text-success">ชำระเงินสำเร็จ</h2>
+        <p class="text-muted">ขอบคุณที่ใช้บริการ โต๊ะ {{ selectedTable }}</p>
+      
+        <div class="bg-light p-3 rounded mb-4 text-start">
+          <div class="d-flex justify-content-between fw-bold">
+            <span>ยอดชำระทั้งสิ้น (รวม VAT)</span>
+            <span class="text-danger">{{ grandTotal | number:'1.2-2' }} ฿</span>
+          </div>
+        </div>
+
+        <div class="row g-2">
+          <div class="col-12">
+            <button (click)="downloadReceipt()" class="btn btn-outline-danger btn-lg w-100 mb-2">
+              <i class="bi bi-file-earmark-pdf me-2"></i>ดาวน์โหลดใบเสร็จ (E-Receipt)
+            </button>
+          </div>
+          <div class="col-12">
+            <button (click)="finishProcess()" class="btn btn-dark btn-lg w-100">
+              กลับหน้าหลัก / เช็คเอาท์
+            </button>
+          </div>
+        </div>
+      
+        <p class="small text-muted mt-3">* ใบเสร็จฉบับนี้จัดทำขึ้นแบบอิเล็กทรอนิกส์</p>
+      </div>
+    </div>
+  </div>
+
+
+</div>

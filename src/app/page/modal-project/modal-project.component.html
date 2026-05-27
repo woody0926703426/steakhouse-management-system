@@ -1,0 +1,52 @@
+<div class="container text-center mt-5">
+
+  <h2 class="mb-4">Bootstrap Modal Project</h2>
+
+  <button class="btn btn-primary me-3"
+          (click)="openModal('ยินดีต้อนรับ')">
+    ยินดีต้อนรับ
+  </button>
+
+  <button class="btn btn-warning"
+          (click)="openModal('คุณแน่ใจหรือไม่')">
+    คุณแน่ใจหรือไม่
+  </button>
+
+  <div *ngIf="resultMessage"
+     class="alert"
+     [ngClass]="{
+       'alert-success': resultType === 'success',
+       'alert-warning': resultType === 'warning'
+     }">
+    {{ resultMessage }}
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade"
+     id="myModal"
+     tabindex="-1"
+     data-bs-backdrop="static"
+     data-bs-keyboard="false">
+
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title">แจ้งเตือน</h5>
+      </div>
+
+      <div class="modal-body text-center">
+        {{ modalMessage }}
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="closeModal()">ปิด</button>
+        <button class="btn btn-success" (click)="confirm()">ยืนยัน</button>
+        
+      </div>
+
+    </div>
+  </div>
+</div>
+

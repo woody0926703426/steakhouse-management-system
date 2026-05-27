@@ -1,0 +1,21 @@
+.menu-card {
+  transition: all 0.3s ease;
+  border-radius: 15px;
+}
+
+.menu-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+  background-color: #f8f9fa;
+}
+
+.icon-circle {
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+/* หากต้องการใช้ Bootstrap Icons อย่าลืมติดตั้งใน index.html หรือ npm นะครับ */

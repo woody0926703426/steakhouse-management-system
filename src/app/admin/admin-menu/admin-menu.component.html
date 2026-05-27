@@ -1,0 +1,38 @@
+<div class="container mt-4 mb-5">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h3 class="fw-bold mb-0 text-secondary"><i class="bi bi-list-stars me-2"></i>จัดการเมนูอาหาร</h3>
+    <button (click)="onAdd.emit()" class="btn btn-success"><i class="bi bi-plus-lg"></i> เพิ่มเมนู</button>
+  </div>
+
+  <div class="card border-0 shadow-sm">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-light">
+          <tr>
+            <th class="ps-4">รูปภาพ</th>
+            <th>ชื่อเมนู</th>
+            <th>ราคา</th>
+            <th>สถานะ</th>
+            <th class="text-end pe-4">จัดการ</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let m of menuItems">
+            <td class="ps-4"><img [src]="m.image" width="50" class="rounded shadow-sm" (click)="onEditImage.emit(m.key)"></td>
+            <td class="fw-bold">{{ m.name }}</td>
+            <td>{{ m.price }} ฿</td>
+            <td>
+              <span [class]="m.isAvailable ? 'badge bg-success' : 'badge bg-secondary'">{{ m.isAvailable ? 'พร้อมขาย' : 'หมด' }}</span>
+            </td>
+            <td class="text-end pe-4">
+              <button (click)="onUpdatePrice.emit(m.key)" class="btn btn-sm btn-outline-primary me-2">แก้ราคา</button>
+              <button (click)="onToggleStatus.emit({key: m.key, status: m.isAvailable})" class="btn btn-sm" [class]="m.isAvailable ? 'btn-outline-warning' : 'btn-outline-success'">
+                {{ m.isAvailable ? 'ปิดเมนู' : 'เปิดขาย' }}
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
